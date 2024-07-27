@@ -4,14 +4,21 @@ import (
 	"fmt"
 )
 
-type node struct {
+type Node struct {
 	value                  int
-	nextNode, previousNode *node
+	nextNode, previousNode *Node
+}
+
+type Queue struct {
+	head          *Node
+	tail          *Node
+	currentLength int
 }
 
 func main() {
 	var decision int = 999
-	var head *node
+	// var head *Node
+	var queue *Queue
 	// head = initializeList()
 
 	for decision != 0 {
@@ -19,23 +26,24 @@ func main() {
 		fmt.Scanln(&decision)
 		switch decision {
 		case 1:
-			if head != nil {
+			if queue != nil {
 				fmt.Println("Nie można zainicjalizować listy. Lista już istnieje.")
 			} else {
-				head = initializeList()
+				queue = initializeList()
 			}
 		case 2:
 			var value int
+			fmt.Println("Wpisz nowy element listy.")
 			fmt.Scanln(&value)
-			addElement(head, value)
+			addElement(queue, value)
 		case 3:
 			var value int
 			fmt.Scanln(&value)
-			deleteElement(head, value)
+			deleteElement(queue, value)
 		case 4:
-			printList(head)
+			printList(queue)
 		case 5:
-			head = nil
+			queue = nil
 			fmt.Println("\nUsunięto listę.")
 		case 0:
 			fmt.Println("\nWyjście z programu.")
@@ -45,82 +53,84 @@ func main() {
 	}
 }
 
-func initializeList() *node {
+func initializeList() *Queue {
 	fmt.Println("\nUtworzono listę.")
 
-	return &node{
-		value:        888,
-		nextNode:     nil,
-		previousNode: nil,
+	return &Queue{
+		head:          nil,
+		tail:          nil,
+		currentLength: 0,
 	}
 }
 
-func addElement(head *node, value int) {
-	if head == nil {
+func addElement(queue *Queue, value int) {
+	if queue == nil {
 		fmt.Println("\nNie można dodać elementu. Lista nie istnieje.")
-	} else if head.nextNode == nil {
-		newNode := node{value: value, nextNode: nil, previousNode: nil}
-		head.nextNode = &newNode
+	} else if queue.currentLength == 0 {
+		newNode := Node{value: value, nextNode: nil, previousNode: nil}
+		queue.head = &newNode
+		queue.tail = &newNode
+		queue.currentLength += 1
 		fmt.Print("\nDodano element: ", value, "\n")
 	} else {
-		var tempNode *node = head.nextNode
-		for tempNode.nextNode != nil {
-			tempNode = tempNode.nextNode
-		}
-		newNode := node{value: value, nextNode: nil, previousNode: tempNode}
-		tempNode.nextNode = &newNode
+		newNode := Node{value: value, nextNode: nil, previousNode: queue.tail}
+		queue.tail.nextNode = &newNode
+		queue.tail = &newNode
+		queue.currentLength += 1
 		fmt.Print("\nDodano element: ", value, "\n")
 	}
 }
 
-func deleteElement(head *node, value int) {
+func deleteElement(queue *Queue, value int) {
 	fmt.Print("\nSzukam węzeła o wartości: ", value, "\n")
-	if head == nil {
+	if queue == nil {
 		fmt.Println("Nie można usunąć elementu z listy. Lista nie istnieje.")
-	} else if head.nextNode == nil {
+	} else if queue.currentLength == 0 {
 		fmt.Println("Lista jest pusta. Nie ma elementów do usunięcia.")
 	} else {
-		tempNode := head.nextNode
+		tempNode := queue.head
 		for tempNode.value != value && tempNode.nextNode != nil {
 			tempNode = tempNode.nextNode
 		}
+
 		if tempNode.value == value && tempNode.nextNode == nil {
-			if tempNode == head.nextNode {
-				head.nextNode = nil
+			if tempNode == queue.head {
+				queue.head = nil
+				queue.tail = nil
 			} else {
 				tempNode.previousNode.nextNode = nil
+				queue.tail = tempNode.previousNode
 			}
+			queue.currentLength -= 1
 			fmt.Print("Usunięto węzeł: ", value, "\n")
 		} else if tempNode.value == value {
-			if tempNode == head.nextNode {
-				head.nextNode = tempNode.nextNode
+			if tempNode == queue.head {
+				queue.head = tempNode.nextNode
 				tempNode.nextNode.previousNode = nil
 			} else {
 				tempNode.previousNode.nextNode = tempNode.nextNode
 				tempNode.nextNode.previousNode = tempNode.previousNode
 			}
+			queue.currentLength -= 1
 			fmt.Print("Usunięto węzeł: ", value, "\n")
 		} else {
 			fmt.Println("Nie znaleziono takiego węzła.")
 		}
 	}
-
 }
 
-func printList(head *node) {
-	if head == nil {
+func printList(queue *Queue) {
+	if queue == nil {
 		fmt.Println("\nNie można wyświetlić listy. Lista nie istnieje.")
-	} else if head.nextNode == nil {
+	} else if queue.currentLength == 0 {
 		fmt.Println("\nLista jest pusta.")
 	} else {
 		fmt.Print("\nWartości listy: ")
-		var tempNode *node = head.nextNode
+		var tempNode *Node = queue.head
 		for tempNode.nextNode != nil {
 			fmt.Print(tempNode.value, " ")
 			tempNode = tempNode.nextNode
 		}
 		fmt.Println(tempNode.value)
-
 	}
-
 }
