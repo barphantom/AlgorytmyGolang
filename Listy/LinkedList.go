@@ -17,9 +17,7 @@ type Queue struct {
 
 func main() {
 	var decision int = 999
-	// var head *Node
 	var queue *Queue
-	// head = initializeList()
 
 	for decision != 0 {
 		fmt.Println("\nWitam w algorytmie listy wiązanej!\n1. Stwórz listę.\n2. Dodaj element.\n3. Usuń element.\n4. Wypisz elementy.\n5. Usuń listę.\n0. Wyjście")
@@ -83,40 +81,37 @@ func addElement(queue *Queue, value int) {
 
 func deleteElement(queue *Queue, value int) {
 	fmt.Print("\nSzukam węzeła o wartości: ", value, "\n")
-	if queue == nil {
-		fmt.Println("Nie można usunąć elementu z listy. Lista nie istnieje.")
-	} else if queue.currentLength == 0 {
+	if queue.currentLength == 0 {
 		fmt.Println("Lista jest pusta. Nie ma elementów do usunięcia.")
-	} else {
-		tempNode := queue.head
-		for tempNode.value != value && tempNode.nextNode != nil {
-			tempNode = tempNode.nextNode
-		}
-
-		if tempNode.value == value && tempNode.nextNode == nil {
-			if tempNode == queue.head {
-				queue.head = nil
-				queue.tail = nil
-			} else {
-				tempNode.previousNode.nextNode = nil
-				queue.tail = tempNode.previousNode
-			}
-			queue.currentLength -= 1
-			fmt.Print("Usunięto węzeł: ", value, "\n")
-		} else if tempNode.value == value {
-			if tempNode == queue.head {
-				queue.head = tempNode.nextNode
-				tempNode.nextNode.previousNode = nil
-			} else {
-				tempNode.previousNode.nextNode = tempNode.nextNode
-				tempNode.nextNode.previousNode = tempNode.previousNode
-			}
-			queue.currentLength -= 1
-			fmt.Print("Usunięto węzeł: ", value, "\n")
-		} else {
-			fmt.Println("Nie znaleziono takiego węzła.")
-		}
+		return
 	}
+
+	tempNode := queue.head
+	for tempNode != nil && tempNode.value != value {
+		tempNode = tempNode.nextNode
+	}
+
+	if tempNode == nil {
+		fmt.Printf("Nie znaleziono węzła o wartości: %d\n", value)
+		return
+	}
+
+	if tempNode == queue.head {
+		queue.head = tempNode.nextNode
+		if tempNode.nextNode != nil {
+			tempNode.nextNode.previousNode = nil
+		}
+	} else if tempNode == queue.tail {
+		queue.tail = tempNode.previousNode
+		if tempNode.previousNode != nil {
+			tempNode.previousNode.nextNode = nil
+		}
+	} else {
+		tempNode.nextNode.previousNode = tempNode.previousNode
+		tempNode.previousNode.nextNode = tempNode.nextNode
+	}
+	queue.currentLength--
+	fmt.Printf("Usunięto węzeł: %d\n", value)
 }
 
 func printList(queue *Queue) {
