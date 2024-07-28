@@ -1,4 +1,4 @@
-package main
+package listy
 
 import (
 	"fmt"
@@ -15,7 +15,7 @@ type Queue struct {
 	currentLength int
 }
 
-func linkedList() {
+func startFifoQueue() {
 	var decision int = 999
 	var queue *Queue
 

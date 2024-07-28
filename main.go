@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/barphantom/AlgorytmyGolang/Listy/LinkedList"
-)
 
+	animals "github.com/barphantom/AlgorytmyGolang/Animals"
+	"github.com/barphantom/AlgorytmyGolang/Listy"
+)
 
 func main() {
 	fmt.Println("Hello")
-	LinkedList.linkedList()
-	
+	animals.Mew()
+	listy
 }
