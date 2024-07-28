@@ -1,4 +1,4 @@
-package main
+package pckLists
 
 import (
 	"fmt"
@@ -15,7 +15,7 @@ type Queue struct {
 	currentLength int
 }
 
-func main() {
+func LinkedList() {
 	var decision int = 999
 	var queue *Queue
 
