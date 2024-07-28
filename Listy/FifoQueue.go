@@ -15,7 +15,7 @@ type Queue struct {
 	currentLength int
 }
 
-func startFifoQueue() {
+func StartFifoQueue() {
 	var decision int = 999
 	var queue *Queue
 
