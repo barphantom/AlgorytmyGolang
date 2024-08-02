@@ -20,7 +20,7 @@ func StartFifoQueue() {
 	var queue *Queue
 
 	for decision != 0 {
-		fmt.Println("\nWitam w algorytmie listy wiązanej!\n1. Stwórz listę.\n2. Dodaj element.\n3. Usuń element.\n4. Wypisz elementy.\n5. Usuń listę.\n0. Wyjście")
+		fmt.Println("\nWitam w algorytmie listy wiązanej!\n1. Stwórz listę.\n2. Dodaj element.\n3. Usuń element.\n4. Wypisz elementy.\n5. Usuń listę.\n6. Wyświetl pierwszy element listy.\n7. Wyczyść kolejkę.\n8. Zdejmij pierwszy element.\n0. Wyjście")
 		fmt.Scanln(&decision)
 		switch decision {
 		case 1:
@@ -33,7 +33,7 @@ func StartFifoQueue() {
 			var value int
 			fmt.Println("Wpisz nowy element listy.")
 			fmt.Scanln(&value)
-			addElement(queue, value)
+			enqueue(queue, value)
 		case 3:
 			var value int
 			fmt.Scanln(&value)
@@ -43,6 +43,25 @@ func StartFifoQueue() {
 		case 5:
 			queue = nil
 			fmt.Println("\nUsunięto listę.")
+		case 6:
+			if queue == nil {
+				fmt.Println("Nie można wyświetlić pierwszego elementu. Lista nie istnieje.")
+			} else {
+				value := front(queue)
+				fmt.Println("Pierwszy element: ", value)
+			}
+		case 7:
+			makeNull(queue)
+			fmt.Println("Wyczyszczono listę.")
+		case 8:
+			if queue == nil {
+				fmt.Println("Nie można zdjąć pierwszego elementu. Lista nie istnieje.")
+			} else if empty(queue) {
+				fmt.Println("Nie można zdjąć pierwszego elementu. Lista jest pusta.")
+			} else {
+				value := dequeue(queue)
+				fmt.Println("Zdjęto element: ", value)
+			}
 		case 0:
 			fmt.Println("\nWyjście z programu.")
 		default:
@@ -61,25 +80,11 @@ func initializeList() *Queue {
 	}
 }
 
-func addElement(queue *Queue, value int) {
-	if queue == nil {
-		fmt.Println("\nNie można dodać elementu. Lista nie istnieje.")
-	} else if queue.currentLength == 0 {
-		newNode := Node{value: value, nextNode: nil, previousNode: nil}
-		queue.head = &newNode
-		queue.tail = &newNode
-		queue.currentLength += 1
-		fmt.Print("\nDodano element: ", value, "\n")
-	} else {
-		newNode := Node{value: value, nextNode: nil, previousNode: queue.tail}
-		queue.tail.nextNode = &newNode
-		queue.tail = &newNode
-		queue.currentLength += 1
-		fmt.Print("\nDodano element: ", value, "\n")
-	}
-}
-
 func deleteElement(queue *Queue, value int) {
+	if queue == nil {
+		fmt.Println("Nie można usunąć elementu. Lista nie istnieje.")
+		return
+	}
 	fmt.Print("\nSzukam węzeła o wartości: ", value, "\n")
 	if queue.currentLength == 0 {
 		fmt.Println("Lista jest pusta. Nie ma elementów do usunięcia.")
@@ -127,5 +132,56 @@ func printList(queue *Queue) {
 			tempNode = tempNode.nextNode
 		}
 		fmt.Println(tempNode.value)
+	}
+}
+
+func makeNull(queue *Queue) {
+	if queue == nil {
+		fmt.Println("Nie można wyczyścić kolejki. Lista nie istnieje.")
+		return
+	}
+	queue.head = nil
+	queue.tail = nil
+	queue.currentLength = 0
+}
+
+func empty(queue *Queue) bool {
+	return queue.currentLength == 0
+}
+
+func front(queue *Queue) int {
+	return queue.head.value
+}
+
+func enqueue(queue *Queue, value int) {
+	if queue == nil {
+		fmt.Println("\nNie można dodać elementu. Lista nie istnieje.")
+	} else if empty(queue) {
+		newNode := &Node{value: value, previousNode: nil, nextNode: nil}
+		queue.head = newNode
+		queue.tail = newNode
+		queue.currentLength++
+		fmt.Print("\nDodano element: ", value, "\n")
+	} else {
+		newNode := &Node{value: value, previousNode: queue.tail, nextNode: nil}
+		queue.tail.nextNode = newNode
+		queue.tail = newNode
+		queue.currentLength++
+		fmt.Print("\nDodano element: ", value, "\n")
+	}
+}
+
+func dequeue(queue *Queue) int {
+	if queue.currentLength == 1 {
+		temp := queue.head.value
+		queue.head = nil
+		queue.tail = nil
+		queue.currentLength--
+		return temp
+	} else {
+		temp := queue.head.value
+		queue.head = queue.head.nextNode
+		queue.currentLength--
+		return temp
 	}
 }
